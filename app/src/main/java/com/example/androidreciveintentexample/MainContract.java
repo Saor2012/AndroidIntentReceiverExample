@@ -10,14 +10,12 @@ public interface MainContract {
 
         void toast(String messag);
 
-        void sendImage(String base64);
+        void sendImage(byte[] byteArray);
     }
 
     interface Presenter extends BasePresenter<View>{
-        void init(String base64);
+        void init(byte[] base64);
 
         void sendImage();
-
-        Single<Bitmap> getImage(String string);
     }
 }

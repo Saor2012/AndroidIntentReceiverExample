@@ -2,6 +2,7 @@ package com.example.androidreciveintentexample;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -26,8 +27,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         presenter = new MainPresenter();
         binding.setEvent(presenter);
+
         Intent intent = getIntent();
         byte[] res = intent.getByteArrayExtra(REQUEST_ACTION);
+        presenter.init(res);
+        //
+        /*onActivityResult(REQUEST_CODE, RESULT_OK, new Intent()
+                .setClassName("yuri.lechshnko.com.intentexample",
+                        "yuri.lechshnko.com.intentexample.MainActivity")
+                .putExtra(RESULT_ACTION, res));*/
 
     }
 
@@ -36,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         binding.imageMain.setImageBitmap(image);
     }
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE){
@@ -48,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 }
             }
         }
-    }
+    }*/
 
 
     @Override
@@ -57,11 +65,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
-    public void sendImage(String base64) {
+    public void sendImage(byte[] byteArray) {
         startActivityForResult(new Intent()
             .setClassName("yuri.lechshnko.com.intentexample",
                     "yuri.lechshnko.com.intentexample.MainActivity")
-            .putExtra(REQUEST_ACTION, base64), REQUEST_CODE);
+            .putExtra(REQUEST_ACTION, byteArray), REQUEST_CODE);
     }
 
     @Override

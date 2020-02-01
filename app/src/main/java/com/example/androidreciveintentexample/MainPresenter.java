@@ -38,47 +38,39 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void init(String base64) {
+    public void init(byte[] base64) {
         if (App.getContext() != null) {
-            if (!base64.equals("")) {
-                getImage(base64).subscribe(new DisposableSingleObserver<Bitmap>() {
-                    @Override
-                    public void onSuccess(Bitmap bitmap) {
-                        view.setImage(image = bitmap);
-                        dispose();
-                    }
+            getImage(base64).subscribe(new DisposableSingleObserver<Bitmap>() {
+                @Override
+                public void onSuccess(Bitmap bitmap) {
+                    view.setImage(image = bitmap);
+                    dispose();
+                }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        if (e.getMessage() != null){
-                            view.toast("Error ".concat(e.getMessage()));
-                        }else {
-                            view.toast("Error method getImage(value) Presenter");
-                        }
+                @Override
+                public void onError(Throwable e) {
+                    if (e.getMessage() != null){
+                        view.toast("Error ".concat(e.getMessage()));
+                    }else {
+                        view.toast("Error method getImage(value) Presenter");
                     }
-                });
-            } else {
-                view.toast("Error received value is null");
-            }
+                }
+            });
+
         } else {
             view.toast("Error App.getContext() == null");
         }
     }
 
-    private Single<Bitmap> getImage() {
+    private Single<Bitmap> getImage(byte[] res) {
         return Single.defer(() -> {
-            InputStream stream = App.getContext().getAssets().open("unnamed.png", ACCESS_BUFFER);
-            byte[] buffer = new byte[stream.available()];
-            stream.read(buffer);
-            stream.close();
-
-            Bitmap image = BitmapFactory.decodeByteArray(buffer, 0, buffer.length);
+            Bitmap image = BitmapFactory.decodeByteArray(res, 0, res.length);
             return Single.just(image);
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<Bitmap> getImage(String string) {
+    /*public Single<Bitmap> getImage(String string) {
         return Single.defer(() -> {
             Bitmap image = null;
             try {
@@ -90,7 +82,7 @@ public class MainPresenter implements MainContract.Presenter {
             return Single.just(image);
         }).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
-    }
+    }*/
 
     @Override
     public void sendImage() {
@@ -98,8 +90,8 @@ public class MainPresenter implements MainContract.Presenter {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream .toByteArray();
-            String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-            view.sendImage(encoded);
+            //String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            view.sendImage(byteArray);
         }else {
             view.toast("Error image null method send Presenter");
         }
